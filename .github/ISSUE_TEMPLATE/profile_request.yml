@@ -1,0 +1,99 @@
+name: Profile request
+description: Propose a profile for a game you own.
+title: "[Profile] "
+labels: ["profile"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A profile is a small set of text files that tells BEA what to change for one game.
+        Use this form to propose one, or to say that you are writing one.
+
+        **Never attach or paste anything from the game.** No game files, no extracted
+        files, no keys, no dumps, no screenshots or other captures, no disassembly and no
+        decompiler output. A request needs identifiers and your own words, nothing else.
+
+        Profiles are limited to performance and compatibility on hardware that the game
+        already targets. A request that involves a protection, license, online, region,
+        platform, hardware-model, firmware-version or permission check, cheats or unlocked
+        content is closed.
+
+        A profile can only be written and tested by someone who owns the game: it is built
+        from what that person observes in their own copy.
+  - type: input
+    id: title-id
+    attributes:
+      label: Title ID
+      description: >-
+        The 16 hexadecimal digits that `bea inspect` prints on its `Title ID` line.
+      placeholder: 16 hexadecimal digits
+    validations:
+      required: true
+  - type: textarea
+    id: build-ids
+    attributes:
+      label: Build ID(s)
+      description: >-
+        One line per executable, as `bea inspect` prints them under `Modules`: the module
+        name and its build ID. Add the game version if you know it, and repeat the lines
+        for every version of the game that you can test.
+      placeholder: |
+        main  build <build ID>  (game version <version>)
+      render: text
+    validations:
+      required: true
+  - type: dropdown
+    id: categories
+    attributes:
+      label: What the profile should change
+      description: Select every category that applies. Only these categories are accepted.
+      multiple: true
+      options:
+        - Frame rate
+        - Resolution
+        - Dynamic resolution
+        - Render scale
+        - Level of detail
+        - Shadows
+        - Draw distance
+        - Texture budget
+        - Memory budget
+        - Post-processing
+        - Performance fix
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: >-
+        In your own words: what is the problem today, on which hardware, and what should
+        the profile change? Measurements are welcome, as text.
+    validations:
+      required: true
+  - type: dropdown
+    id: involvement
+    attributes:
+      label: Your part
+      description: How you can help with this profile.
+      options:
+        - I will write the profile and open a pull request
+        - I can test a profile on my own hardware
+        - I am only suggesting it
+    validations:
+      required: true
+  - type: checkboxes
+    id: attestations
+    attributes:
+      label: Before you submit
+      options:
+        - label: >-
+            I own the game that this request is about, and nothing from it is attached to
+            this request or pasted into it: no game files, extracted files, keys, dumps,
+            captures, disassembly or decompiler output.
+          required: true
+        - label: >-
+            The request stays within the categories above. It does not involve a
+            protection, license, online, region, platform, hardware-model,
+            firmware-version or permission check, cheats or unlocked content.
+          required: true

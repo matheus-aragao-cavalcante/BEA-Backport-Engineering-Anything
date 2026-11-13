@@ -1,0 +1,7 @@
+# Issues are opened through the forms in this directory: a bug report and a profile
+# request. Security problems go to the private channel below, never to a public issue.
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security problem privately
+    url: https://github.com/matheus-aragao-cavalcante/BEA-Backport-Engineering-Anything/security/advisories/new
+    about: Vulnerabilities, or game data / keys found in the repository. Never in a public issue.

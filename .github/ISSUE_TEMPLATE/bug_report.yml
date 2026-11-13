@@ -1,0 +1,97 @@
+name: Bug report
+description: BEA crashed, refused valid input or produced a wrong result.
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report a problem.
+
+        **Never attach or paste anything from a game.** No game files, no extracted files,
+        no keys, no dumps, no screenshots or other captures, and no files that BEA
+        produced from a game. Text is all this form needs.
+
+        Questions about obtaining games or keys, or about modifying a console, are outside
+        the scope of this project. They are closed without help.
+
+        Do not report a security problem here. Report it privately instead:
+        https://github.com/matheus-aragao-cavalcante/BEA-Backport-Engineering-Anything/security/advisories/new
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What BEA did. Include the exact error message if there was one.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      description: What BEA should have done instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: >-
+        The shortest list of steps that shows the problem. Ideally the steps use the
+        synthetic sample game that `bea synth` writes, so that anyone can repeat them
+        without a game.
+      placeholder: |
+        1. bea synth .gamedump/sample --profiles-dir .gamedump/sample-profiles
+        2. bea build .gamedump/sample --profiles-dir .gamedump/sample-profiles
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: command-line
+    attributes:
+      label: Command line used
+      description: >-
+        The exact command that shows the problem, copied from your terminal. You may
+        shorten personal paths.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Output of bea doctor --json
+      description: >-
+        Run `bea doctor --json` and paste everything it prints. It reports versions,
+        tools and the profile directory, and nothing about any game. You may shorten
+        personal paths.
+      render: json
+    validations:
+      required: true
+  - type: input
+    id: operating-system
+    attributes:
+      label: Operating system
+      description: Name and version.
+      placeholder: "For example: Windows 11, Ubuntu 24.04, macOS 15"
+    validations:
+      required: true
+  - type: textarea
+    id: excerpt
+    attributes:
+      label: Error output or report excerpt
+      description: >-
+        Optional. A few lines of text that show the problem: the error output, or a short
+        excerpt of `backport_report.json` or `bea_build.json`. Reports list the files of
+        a game, so keep only the lines that matter and remove the rest. Never paste a
+        whole report.
+      render: text
+    validations:
+      required: false
+  - type: checkboxes
+    id: no-game-content
+    attributes:
+      label: Before you submit
+      options:
+        - label: >-
+            Nothing from a game is attached to this report or pasted into it: no game
+            files, extracted files, keys, dumps or captures.
+          required: true

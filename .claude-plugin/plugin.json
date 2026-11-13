@@ -1,0 +1,19 @@
+{
+  "name": "bea",
+  "version": "0.1.0",
+  "description": "Drive BEA (Backport Engineering Anything): inspect and analyze a game folder the user extracted themselves, write and validate profiles, and build a LayeredFS mod folder.",
+  "author": {
+    "name": "The BEA Contributors"
+  },
+  "license": "MIT",
+  "keywords": [
+    "backport",
+    "modding",
+    "layeredfs",
+    "ips",
+    "textures",
+    "cli"
+  ],
+  "homepage": "https://github.com/matheus-aragao-cavalcante/BEA-Backport-Engineering-Anything",
+  "repository": "https://github.com/matheus-aragao-cavalcante/BEA-Backport-Engineering-Anything"
+}

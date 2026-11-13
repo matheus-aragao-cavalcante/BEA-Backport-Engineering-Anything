@@ -1,0 +1,55 @@
+# BEA executable patches template (this file is optional: delete it if you patch nothing).
+#
+# One entry per build of one executable module. `bea inspect <game folder>` prints the
+# build ID of every module of your dump; a build without an entry is left unpatched.
+#
+# A patch is a named group of hunks that apply together or not at all. A hunk replaces a
+# few bytes in place, and only after the module was shown to be the one it was written
+# for:
+#   - offset: position in the module's memory image, that is the address shown by a
+#     disassembler minus its image base (or `address`, from which BEA subtracts image_base);
+#   - patch_bytes: the replacement, hex pairs you wrote yourself, at most 256 bytes;
+#   - expected_sha256 / window_offset / window_length: the SHA-256 of a small window of
+#     the original module that contains the patched bytes. The profile then holds no
+#     byte of the game. `bea nso hunk <module> --offset ... --patch "..."` prints these
+#     three lines for you.
+#
+# Every patch states its category: framerate, resolution, dynamic_resolution,
+# render_scale, lod, shadow_quality, draw_distance, texture_budget, memory_budget,
+# post_fx or perf_fix. Patches with any other purpose are out of scope.
+#
+# Quote build IDs, byte strings and hashes: unquoted, YAML reads 12345678 as a number.
+# Every key is described in docs/PROFILES.md.
+#
+# Every value in this file is invented. Nothing here describes a real game.
+
+schema: 1
+title_id: "0100000000000000"             # the same ID as in profile.yaml
+builds:
+  - build_id: "0123456789ABCDEF0123456789ABCDEF01234567"
+    module: main                         # ExeFS file name; main is the default
+    label: "v1.0.0"                      # informative: the game version of this build
+    image_base: 0x7100000000             # where your disassembler loaded the module
+    patches:
+      - name: "render-720p"
+        category: resolution
+        description: "Internal resolution 1080p -> 720p"
+        hunks:
+          - offset: 0x1A2B3C
+            patch_bytes: "08 5A 80 52"
+            expected_sha256: "8d3a6c0e5f1b2a497c6e0d1f3b5a7c9e2d4f6a8b0c1e3d5f7a9b2c4d6e8f0a1b"
+            window_offset: 0x1A2B30
+            window_length: 32
+          - address: 0x71001A2B40        # the same position as offset 0x1A2B40
+            patch_bytes: "09 5A 80 52"
+            expected_sha256: "8d3a6c0e5f1b2a497c6e0d1f3b5a7c9e2d4f6a8b0c1e3d5f7a9b2c4d6e8f0a1b"
+            window_offset: 0x1A2B30      # windows are always module offsets
+            window_length: 32
+      - name: "frame-pacing-check"
+        category: framerate
+        description: "Kept for reference: a disabled patch is validated but not applied"
+        enabled: false
+        hunks:
+          - offset: 0x2C4D10
+            patch_bytes: "1F 20 03 D5"
+            expected_sha256: "0f1e2d3c4b5a69788796a5b4c3d2e1f00f1e2d3c4b5a69788796a5b4c3d2e1f0"

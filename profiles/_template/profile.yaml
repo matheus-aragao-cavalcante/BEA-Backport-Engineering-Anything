@@ -1,0 +1,91 @@
+# BEA profile template.
+#
+# How to use it:
+#   1. `bea inspect <game folder>` prints the title ID of your game.
+#   2. Copy this folder next to it, name the copy after that title ID (16 hex digits,
+#      uppercase) and write the same ID in title_id below.
+#   3. Keep the sections you need and delete the others: only schema and title_id are
+#      required, and a profile with nothing else just downsizes textures to 1280x720.
+#   4. `bea profile validate <your folder>` checks the result;
+#      `bea build <game folder> --dry-run` shows what it would do to your dump.
+#
+# Every key is described in docs/PROFILES.md. Three rules prevent most mistakes:
+#   - The loader is strict: an unknown key or a wrong type is an error, never a guess.
+#   - Quote identifiers and values. Unquoted, YAML reads an ID made of digits as a
+#     number, on as true and 0.70 as 0.7.
+#   - Paths are relative to the RomFS root, use "/" and are matched case-insensitively.
+#
+# Every value in this file is invented. Nothing here describes a real game.
+
+schema: 1
+title_id: "0100000000000000"       # must equal the name of the profile folder
+name: "Example Game"               # optional, informative
+description: >                     # optional, informative
+  What this backport changes, and the game version and hardware it was tested on.
+
+# The default limit box: nothing BEA produces is larger than this.
+target:
+  max_width: 1280
+  max_height: 720
+
+# Textures larger than their limits are made smaller; the others are not touched.
+textures:
+  enabled: true
+  defaults:                        # inherited by every rule, and used when no rule matches
+    strategy: auto                 # auto | mip_drop | resample
+    filter: lanczos                # nearest | box | bilinear | hamming | bicubic | lanczos
+    power_of_two: preserve         # preserve | ignore
+    alpha: straight                # straight | weighted
+  rules:                           # the first rule that matches a file wins
+    - match: ["ui/**"]             # interface art may stay larger than the default box
+      max_width: 1920
+      max_height: 1080
+      alpha: weighted              # avoids halos around cut-out art
+    - match: ["**/*_lut.*", "fonts/**"]
+      skip: true                   # these files hold data, not pictures: leave them alone
+    - match: "characters/**/*.dds"
+      exclude: "characters/**/*_n.dds"
+      scale: 0.5                   # half size, on top of the limit box
+      strategy: mip_drop           # lossless: only drops the largest mip levels
+
+# Videos need the external programs ffmpeg and ffprobe (`bea doctor` looks for them).
+# Only files matched by a rule are ever transcoded.
+media:
+  enabled: true
+  rules:
+    - match: "movies/**/*.mp4"
+      max_height: 720
+      max_fps: 30
+      crf: 23                      # constant quality; use video_bitrate instead, never both
+      audio_bitrate: "128k"
+
+# Edits to text configuration files. An edit that cannot be applied fails the build:
+# it means the profile does not fit this version of the game.
+configs:
+  - match: "config/graphics.ini"
+    format: ini
+    edits:
+      - section: "Rendering"
+        key: "ResolutionScale"
+        value: "70"
+      - section: "Rendering"
+        key: "ShadowQuality"
+        value: "Low"
+        if_missing: add            # error (default) | add | ignore
+  - match: "config/settings.json"
+    format: json
+    edits:
+      - path: ["video", "maxFps"]
+        value: 30
+  - match: "boot/engine.cfg"
+    format: text
+    required: false                # no error when the game has no such file
+    edits:
+      - find: '^(vsync_interval\s*=\s*)\d+'
+        replace: '\g<1>2'
+        count: 1                   # the exact number of matches expected
+
+# How the executable patches of patches.yaml are delivered.
+binary:
+  patchset_name: "example-backport"
+  mode: ips                        # ips | replace (the result of replace must never be shared)

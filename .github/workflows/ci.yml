@@ -1,0 +1,56 @@
+# The four checks that every pull request must pass (see CONTRIBUTING.md), on Linux and
+# Windows, for every supported Python version.
+name: CI
+
+# The key is quoted so that YAML 1.1 parsers do not read it as a boolean.
+"on":
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.12", "3.13", "3.14"]
+    env:
+      # Every uv command of the job uses the interpreter of the matrix entry.
+      UV_PYTHON: ${{ matrix.python }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install Python ${{ matrix.python }}
+        run: uv python install ${{ matrix.python }}
+
+      # The media integration tests need ffmpeg and ffprobe. They run on Linux and skip
+      # themselves where the programs are missing (Windows).
+      - name: Install ffmpeg (Linux only)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends ffmpeg
+
+      - name: Install dependencies
+        run: uv sync --python ${{ matrix.python }}
+
+      - name: Lint
+        run: uv run ruff check .
+
+      - name: Check formatting
+        run: uv run ruff format --check .
+
+      - name: Type check
+        run: uv run mypy
+
+      - name: Test
+        run: uv run pytest

@@ -1,0 +1,15 @@
+{
+  "name": "bea",
+  "description": "BEA (Backport Engineering Anything) skill for coding agents.",
+  "owner": {
+    "name": "The BEA Contributors"
+  },
+  "plugins": [
+    {
+      "name": "bea",
+      "source": "./",
+      "description": "Instructions for driving the BEA command line and for writing BEA profiles.",
+      "category": "development"
+    }
+  ]
+}

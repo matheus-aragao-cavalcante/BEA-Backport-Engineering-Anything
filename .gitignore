@@ -1,0 +1,86 @@
+# =============================================================================
+# Clean-room shield
+# Game data, keys and protected binaries must never reach this repository.
+# tests/test_arch_rules.py asserts that the patterns below stay in place.
+# =============================================================================
+
+# Local game dumps, one folder per game: .gamedump/<Game>/
+.gamedump/
+# Intermediate build state and final outputs (both derived from game files)
+work/
+out/
+# External tools downloaded locally (and the usual place for a user's own keys)
+tools/
+
+# Game packages, encrypted content, tickets and certificates
+*.nsp
+*.nsz
+*.xci
+*.xcz
+*.nca
+*.ncz
+*.tik
+*.cert
+
+# Executables, metadata and patches extracted from / generated for a game
+*.nso
+*.nro
+*.kip
+*.npdm
+*.nacp
+*.ips
+*.ips32
+*.pchtxt
+
+# Game asset containers and media (never part of this repository)
+*.bntx
+*.bfres
+*.sarc
+*.szs
+*.pak
+*.ucas
+*.utoc
+*.uasset
+*.bundle
+*.unity3d
+*.assets
+*.bk2
+*.usm
+
+# Keys
+prod.keys
+title.keys
+dev.keys
+console.keys
+keys.txt
+*.keys
+
+# Reports produced by `bea analyze` / `bea build` (they list a game's files)
+backport_report.json
+*.backport_report.json
+bea_build.json
+
+# =============================================================================
+# Python
+# =============================================================================
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+dist/
+build/
+.coverage
+htmlcov/
+
+# =============================================================================
+# OS / editors
+# =============================================================================
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
