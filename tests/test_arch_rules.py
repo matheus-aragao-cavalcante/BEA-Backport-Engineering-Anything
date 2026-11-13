@@ -128,10 +128,19 @@ ORCHESTRATION_FORBIDDEN = {"cli", "__main__"}
 
 
 def iter_source_files(root: Path, suffixes: Iterable[str] = (".py",)) -> Iterator[Path]:
-    """Yield the files under ``root`` with one of ``suffixes``, skipping caches."""
+    """Yield the files under ``root`` with one of ``suffixes``, skipping caches.
+
+    Only the part of the path *below* ``root`` is compared with :data:`SKIPPED_DIRS`: the
+    checkout itself may live under a folder with such a name (CI runners use
+    ``/home/runner/work/...``), and that must not hide every file.
+    """
     wanted = set(suffixes)
     for path in sorted(root.rglob("*")):
-        if path.is_file() and path.suffix in wanted and not SKIPPED_DIRS & set(path.parts):
+        if (
+            path.is_file()
+            and path.suffix in wanted
+            and not SKIPPED_DIRS & set(path.relative_to(root).parts)
+        ):
             yield path
 
 
@@ -730,3 +739,16 @@ def test_detector_profile_patches(tmp_path: Path) -> None:
     problems = find_profile_patch_problems(profiles)
     assert len(problems) == 2
     assert "category" in problems[0] and "expected_bytes" in problems[1]
+
+
+def test_scanner_ignores_skipped_names_above_the_root(tmp_path: Path) -> None:
+    # A checkout inside a folder named like a skipped one ("work", "build", "out", ...),
+    # as on CI runners (/home/runner/work/...), must still be scanned.
+    root = tmp_path / "work" / "build" / "out" / "bea"
+    _write(root, "module.py", "x = 1\n")
+    _write(root, "pkg/inner.py", f'GAME = "{_synthetic_title_id()}"\n')
+    _write(root, "__pycache__/cached.py", "y = 2\n")  # skipped: below the root
+    _write(root, "work/scratch.py", "z = 3\n")  # skipped: below the root
+    found = [path.relative_to(root).as_posix() for path in iter_source_files(root)]
+    assert found == ["module.py", "pkg/inner.py"]
+    assert len(find_title_ids(root)) == 1

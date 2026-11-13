@@ -7,8 +7,17 @@ may change behaviour). The version is defined once, in `bea/__init__.py`.
 
 ## [Unreleased]
 
-Nothing yet. See [docs/ROADMAP.md](docs/ROADMAP.md) for what is planned and what is
-known to be missing.
+See [docs/ROADMAP.md](docs/ROADMAP.md) for what is planned and what is known to be
+missing.
+
+### Fixed
+
+- The architecture guardrails scanned no file of the engine when the checkout lives
+  under a folder named like a skipped one (`work`, `build`, `out` ...), as on CI runners
+  (`/home/runner/work/...`): the scanner compared the absolute path instead of the part
+  below the scanned folder. The checks that depend on it (no title IDs, build IDs or key
+  file names in `bea/`) could therefore pass without looking at anything; a regression
+  test now covers that case.
 
 ## [0.1.0] - 2026-11-13
 
